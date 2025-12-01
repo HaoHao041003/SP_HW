@@ -42,10 +42,14 @@ main(int argc, char *argv[])
         snprintf(clientFifo, CLIENT_FIFO_NAME_LEN, CLIENT_FIFO_TEMPLATE,
                 (long) req.pid);
 
-        clientFd = open(clientFifo, O_WRONLY);
+        clientFd = open(clientFifo, O_WRONLY | O_NONBLOCK);
         if (clientFd == -1) {
-            /* Open failed, give up on client */
-            errMsg("open %s", clientFifo);
+            if (errno == ENXIO) {
+                fprintf(stderr, "Client %ld dropped: No reader on FIFO\n", (long) req.pid);
+            } else {
+                /* Open failed, give up on client */
+                errMsg("open %s", clientFifo);
+            }
             continue;
         }
 
