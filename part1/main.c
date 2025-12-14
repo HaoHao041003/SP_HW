@@ -26,7 +26,9 @@ int main(int argc, char **argv) {
 		exit(errno);
 	}
 
-	while(fputs("What word do you want : ",stderr),gets(tryit.word)) {
+	// changed gets to fgets to avoid deprecation issue and added newline removal for fgets
+	while(fputs("What word do you want : ",stderr),fgets(tryit.word, WORD, stdin)) {
+		tryit.word[strcspn(tryit.word, "\n")] = 0;
 		switch(lookup(&tryit,argv[1]) ) {
 			case FOUND:
 				printf("%s : %s",tryit.word,tryit.text);
@@ -38,4 +40,6 @@ int main(int argc, char **argv) {
 				DIE(argv[1]);
 		}
 	}
+	// Add final newline for better prompt display
+	fputs("\n", stderr);
 }

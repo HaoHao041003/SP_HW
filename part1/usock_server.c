@@ -24,17 +24,40 @@ int main(int argc, char **argv) {
 
     /* Setup socket.
      * Fill in code. */
-    
+	sd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (sd < 0)
+	{
+		DIE("socket");
+	}
+		
     /* Initialize address.
      * Fill in code. */
+	memset(&server, 0, sizeof(server));
+	server.sun_family = AF_UNIX;
+	strcpy(server.sun_path, argv[2]);
 
     /* Name and activate the socket.
      * Fill in code. */
+	unlink(argv[2]); 
+	if (bind(sd, (struct sockaddr *)&server, sizeof(server)) < 0)
+	{
+		DIE("bind");
+	}
+	if (listen(sd, 5) < 0)
+	{
+    	DIE("listen");
+	}
 
     /* main loop : accept connection; fork a child to have dialogue */
     for (;;) {
 		/* Wait for a connection.
 		 * Fill in code. */
+		socklen_t len = sizeof(server);
+		cd = accept(sd, (struct sockaddr *)&server, &len);
+		if (cd < 0) 
+		{
+			DIE("accept");
+		}
 
 		/* Handle new client in a subprocess. */
 		switch (fork()) {
@@ -44,16 +67,19 @@ int main(int argc, char **argv) {
 				close (sd);	/* Rendezvous socket is for parent only. */
 				/* Get next request.
 				 * Fill in code. */
-				while (___________)) {
+				while (read(cd, &tryit, sizeof(Dictrec)) > 0) {
 
 					/* Lookup request. */
 					switch(lookup(&tryit,argv[1]) ) {
 						/* Write response back to client. */
 						case FOUND: 
 							/* Fill in code. */
+							write(cd, &tryit, sizeof(Dictrec));
 							break;
 						case NOTFOUND: 
 							/* Fill in code. */
+							strcpy(tryit.text, "XXXX");
+							write(cd, &tryit, sizeof(Dictrec));
 							break;
 						case UNAVAIL:
 							DIE(argv[1]);
