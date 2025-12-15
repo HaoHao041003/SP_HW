@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
 		exit(errno);
 	}
 
-	while(fputs("What word do you want : ",stderr),gets(tryit.word)) {
+	while(fputs("What word do you want : ",stderr),fgets(tryit.word, WORD, stdin)) {
+		tryit.word[strcspn(tryit.word, "\n")] = 0;
 		switch(lookup(&tryit,argv[1]) ) {
 			case FOUND:
 				printf("%s : %s",tryit.word,tryit.text);
@@ -38,4 +39,5 @@ int main(int argc, char **argv) {
 				DIE(argv[1]);
 		}
 	}
+	fputs("\n", stderr);
 }

@@ -24,12 +24,26 @@ int main(int argc, char **argv) {
 
 	/* Create a UDP socket.
 	 * Fill in code. */
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sockfd < 0)
+	{
+		DIE("socket");
+	}
 
 	/* Initialize address.
 	 * Fill in code. */
+	memset(&server, 0, sizeof(server));
+	server.sin_family = AF_INET;
+	server.sin_port = htons(PORT);
+	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	/* Name and activate the socket.
 	 * Fill in code. */
+	if (bind(sockfd, (struct sockaddr *)&server, sizeof(server)) < 0)
+	{
+		DIE("bind");
+	}
+
 
 	for (;;) { /* await client packet; respond immediately */
 
@@ -37,21 +51,26 @@ int main(int argc, char **argv) {
 
 		/* Wait for a request.
 		 * Fill in code. */
+		int n = recvfrom(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, &siz);
 
-		while (___) {
+		while (n>0) {
 			/* Lookup request and respond to user. */
 			switch(lookup(tryit,argv[1]) ) {
 				case FOUND: 
 					/* Send response.
 					 * Fill in code. */
+					sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, siz);
 					break;
 				case NOTFOUND : 
 					/* Send response.
 					 * Fill in code. */
+					strcpy(tryit->text, "XXXX");
+					sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, siz);
 					break;
 				case UNAVAIL:
 					DIE(argv[1]);
 			} /* end lookup switch */
+			break;
 		} /* end while */
 	} /* end forever loop */
 } /* end main */

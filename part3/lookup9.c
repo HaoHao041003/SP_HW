@@ -21,13 +21,25 @@ int lookup(Dictrec * sought, const char * resource) {
 
 		/* Set up destination address.
 		 * Fill in code. */
+		server.sin_family = AF_INET;
+		server.sin_port = htons(PORT);
+		host = gethostbyname(resource);
+		memcpy(&server.sin_addr, host->h_addr_list[0], host->h_length);
 
 		/* Allocate a socket.
 		 * Fill in code. */
+		sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+		if (sockfd < 0)
+		{
+			DIE("socket");
+		}
 	}
 
 	/* Send a datagram & await reply
 	 * Fill in code. */
+	socklen_t len = sizeof(server);
+	sendto(sockfd, sought, sizeof(Dictrec), 0, (struct sockaddr *)&server, len);
+	recvfrom(sockfd, sought, sizeof(Dictrec), 0, NULL, NULL);
 
 	if (strcmp(sought->text,"XXXX") != 0) {
 		return FOUND;

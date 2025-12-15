@@ -6,3 +6,7 @@ ps aux | grep usock_server
 part2
 ./isock_server fixrec &
 ./isock_client localhost
+
+part3
+./udp_server fixrec &
+./udp_client localhost
