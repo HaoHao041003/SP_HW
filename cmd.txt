@@ -2,3 +2,7 @@ part1
 ./usock_server fixrec TUNNEL &
 ./usock_client TUNNEL
 ps aux | grep usock_server
+
+part2
+./isock_server fixrec &
+./isock_client localhost
